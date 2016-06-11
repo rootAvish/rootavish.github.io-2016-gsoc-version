@@ -5,9 +5,22 @@
     <atom:link href="http://localhost:8080/feed.xml" rel="self" type="application/rss+xml"></atom:link>
     <link>http://localhost:8080</link>
     <description>Set up for and currently being used exclsively for doing weekly write ups as a GSoC student for ScrapingHub</description>
-    <pubDate>Sun, 22 May 2016 05:30:00 +0630</pubDate>
+    <pubDate>Fri, 10 Jun 2016 05:30:00 +0630</pubDate>
     <generator>Wintersmith - https://github.com/jnordberg/wintersmith</generator>
     <language>en</language>
+    <item>
+      <title>Rewriting Scrapy Signals, Part I</title>
+      <link>http://localhost:8080/articles/rewriting-scrapy-signals/</link>
+      <pubDate>Fri, 10 Jun 2016 05:30:00 +0630</pubDate>
+      <guid isPermaLink="true">http://localhost:8080/articles/rewriting-scrapy-signals/</guid>
+      <author></author>
+      <description>&lt;p&gt;In this report, I shall present a brief summary of the work done upto this point. To iterate, the end goal of the project is to improve the efficiency
+of Scrapy’s signaling API. For this purpose the idea was to use Django’s signaling mechanism which claims to make the signals 90% faster. Consequently, according to plan the first step was to port &lt;code&gt;django.dispatch&lt;/code&gt;, modify it to our needs and create the &lt;code&gt;scrapy.dispatch&lt;/code&gt;. About a week and a half was spent on that front in first understanding the way that library is written, and what would changes needed to go into making the same work with Scrapy, and then actually making those changes. &lt;code&gt;django.dispatch&lt;/code&gt; refactored much of the code of &lt;code&gt;PyDispatcher&lt;/code&gt; into a &lt;code&gt;Signal&lt;/code&gt; class. It also introduced a caching mechanism for receivers and introduced the &lt;code&gt;weakref&lt;/code&gt; module into the code.    &lt;/p&gt;
+&lt;p&gt;&lt;span class=&quot;more&quot;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;send_robust&lt;/code&gt; method was used as a starting point for the &lt;code&gt;send_robust_deferred&lt;/code&gt; call to incorporate methods returning deferred calls, this was required for re-writing the &lt;code&gt;scrapy.utils.signal&lt;/code&gt; module which has the &lt;code&gt;send_catch_log&lt;/code&gt; and &lt;code&gt;send_catch_log_deferred&lt;/code&gt; modules. These methods are relative inefficient and tend to bottleneck the scraping process, and were one of the reasons behind the re-write of signals. The next step involved was to re-define the core signals at the heart of Scrapy as instances of &lt;code&gt;scrapy.Signal&lt;/code&gt; instead of generic &lt;code&gt;object&lt;/code&gt;class. The &lt;code&gt;signalManager&lt;/code&gt; class also needed to be changed however the API of the same was kept consistent for backward compatibiliy.&lt;/p&gt;
+&lt;p&gt;You can track the progress and check out how the project is coming along &lt;a href=&quot;https://github.com/rootavish/scrapy/tree/signal-rewrite&quot;&gt;here&lt;/a&gt; and &lt;a href=&quot;https://github.com/scrapy/scrapy/pull/2030&quot;&gt;here&lt;/a&gt; although I must admit I do not push frequently and most commits are either local or small test pieces written outside the mainline code. I shall however, be pushing a working prototype by the end of Monday so that’s there to look out for.&lt;/p&gt;
+</description>
+    </item>
     <item>
       <title>Community Bonding</title>
       <link>http://localhost:8080/articles/community-bonding/</link>
