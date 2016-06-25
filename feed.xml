@@ -5,9 +5,34 @@
     <atom:link href="http://localhost:8080/feed.xml" rel="self" type="application/rss+xml"></atom:link>
     <link>http://localhost:8080</link>
     <description>Set up for and currently being used exclsively for doing weekly write ups as a GSoC student for ScrapingHub</description>
-    <pubDate>Fri, 10 Jun 2016 05:30:00 +0630</pubDate>
+    <pubDate>Fri, 24 Jun 2016 05:30:00 +0630</pubDate>
     <generator>Wintersmith - https://github.com/jnordberg/wintersmith</generator>
     <language>en</language>
+    <item>
+      <title>Midterm Evaluations</title>
+      <link>http://localhost:8080/articles/midterm-evaluation/</link>
+      <pubDate>Fri, 24 Jun 2016 05:30:00 +0630</pubDate>
+      <guid isPermaLink="true">http://localhost:8080/articles/midterm-evaluation/</guid>
+      <author></author>
+      <description>&lt;h3 id=&quot;what-s-done&quot;&gt;What’s done&lt;/h3&gt;
+&lt;p&gt;In the time that has passed since I last posted one of these, I managed to get a prototype of scrapy to work using the new Signals API. This introduced two very significant API changes into Scrapy.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&quot;more&quot;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;All Signals now need to be objects of the &lt;code&gt;scrapy.dispatch.Signal&lt;/code&gt; class instead of the generic python &lt;code&gt;object&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;All signal handlers must now receive &lt;code&gt;**kwargs&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The first change would not affect the existing extensions/3^rd party plugins much since declaring new signals is not something for the most part extensions do, and using &lt;code&gt;PyDispatcher&lt;/code&gt; to call the signals instead of the &lt;code&gt;SignalManager&lt;/code&gt; class has long been deprecated in Scrapy. To accomodate this, the Scrapy &lt;code&gt;SignalManager&lt;/code&gt; has not yet been phased out and would still be functional, although possibly deprecated depending on how the performance benchmarks work out, and whether avoiding the overhead for the method calls is required.  &lt;/p&gt;
+&lt;p&gt;The second of these changes however, affects the majority of these extensions and requires that we accomodate in someway. The solution required accomodating the &lt;code&gt;RobustApply&lt;/code&gt; method of PyDispatcher in Scrapy, this method however would considerably affect the performance of the module, and so in order to have the faster signals one would be required to use handlers with keyword arguments.  &lt;/p&gt;
+&lt;p&gt;The API was also modified to accomodate twisted &lt;code&gt;deferred&lt;/code&gt; objects to be returned, and the error handling changed to use the &lt;code&gt;Failure&lt;/code&gt; class from &lt;code&gt;twisted.deferred&lt;/code&gt;.  &lt;/p&gt;
+&lt;p&gt;The new module has also been unit tested for the most part, with some tests borrowed from Django since they’re the original authors of this signals API.
+I’m currently working on the benchmark suite, writing spiders that use non-standard signals and calls to test the performance. Eariler, signaling through &lt;code&gt;send_catch_log&lt;/code&gt; used to be the biggest bottleneck requiring 5X the time required for HTML parsing. Any improvements we can do on that, the better although ideally I would like if we could make it so that signals are no longer the bottleneck to the crawling.  &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt; The following section is under construction. &lt;/strong&gt;&lt;/p&gt;
+&lt;h3 id=&quot;what-needs-to-be-done&quot;&gt;What needs to be done&lt;/h3&gt;
+&lt;p&gt;Following the midterms, the highest priority would be to complete the bechmark suite so we know the viability of the approach we have used thus far and where to proceed from here. In case the results obtained are satisfactory, we shall then continue to make backward compatibility fixes and re-writing algortihms that are still not as efficient as they can be and look to maximize performance. We can continue on to provide full backward compatibility with object() like signals, however that would come with the trade-off that the performance of them would be more or less same as that of what was previously achieveable from the API.  &lt;/p&gt;
+&lt;p&gt;Another major requirement would be for me to write good documentation of these parts, since these are essential to anybody writing an extension. We would also need to be on the lookout for regressions, if any.&lt;/p&gt;
+&lt;p&gt;~ Avishkar&lt;/p&gt;
+</description>
+    </item>
     <item>
       <title>Rewriting Scrapy Signals, Part I</title>
       <link>http://localhost:8080/articles/rewriting-scrapy-signals/</link>

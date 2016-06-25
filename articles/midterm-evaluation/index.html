@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width">
+    <title>Midterm Evaluations - The Rootavish Files
+    </title>
+    <link rel="alternate" href="http://localhost:8080/feed.xml" type="application/rss+xml" title="Set up for and currently being used exclsively for doing weekly write ups as a GSoC student for ScrapingHub">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic|Anonymous+Pro:400,700,400italic,700italic|Merriweather:400,700,300">
+    <link rel="stylesheet" href="/css/main.css">
+  </head>
+  <body class="article-detail">
+    <header class="header">
+      <div class="content-wrap">
+        <h1>Midterm Evaluations</h1>
+        <p class="author">Written by <span class="author"><a href="mailto:rootavish@gmail.com">rootavish</a></span>
+        </p>
+      </div>
+    </header>
+    <div id="content">
+      <div class="content-wrap">
+        <article class="article">
+          <section class="content"><h3 id="what-s-done">What’s&nbsp;done</h3>
+<p>In the time that has passed since I last posted one of these, I managed to get a prototype of scrapy to work using the new Signals <span class="caps">API</span>. This introduced two very significant API changes into&nbsp;Scrapy.</p>
+<p><span class="more"></span></p>
+<ul>
+<li>All Signals now need to be objects of the <code>scrapy.dispatch.Signal</code> class instead of the generic python <code>object</code></li>
+<li>All signal handlers must now receive <code>**kwargs</code></li>
+</ul>
+<p>The first change would not affect the existing extensions/3^rd party plugins much since declaring new signals is not something for the most part extensions do, and using <code>PyDispatcher</code> to call the signals instead of the <code>SignalManager</code> class has long been deprecated in Scrapy. To accomodate this, the Scrapy <code>SignalManager</code> has not yet been phased out and would still be functional, although possibly deprecated depending on how the performance benchmarks work out, and whether avoiding the overhead for the method calls is&nbsp;required.  </p>
+<p>The second of these changes however, affects the majority of these extensions and requires that we accomodate in someway. The solution required accomodating the <code>RobustApply</code> method of PyDispatcher in Scrapy, this method however would considerably affect the performance of the module, and so in order to have the faster signals one would be required to use handlers with keyword&nbsp;arguments.  </p>
+<p>The <span class="caps">API</span> was also modified to accomodate twisted <code>deferred</code> objects to be returned, and the error handling changed to use the <code>Failure</code> class from <code>twisted.deferred</code>.  </p>
+<p>The new module has also been unit tested for the most part, with some tests borrowed from Django since they’re the original authors of this signals <span class="caps">API</span>.
+I’m currently working on the benchmark suite, writing spiders that use non-standard signals and calls to test the performance. Eariler, signaling through <code>send_catch_log</code> used to be the biggest bottleneck requiring 5X the time required for <span class="caps">HTML</span> parsing. Any improvements we can do on that, the better although ideally I would like if we could make it so that signals are no longer the bottleneck to the&nbsp;crawling.  </p>
+<p><strong> The following section is under&nbsp;construction. </strong></p>
+<h3 id="what-needs-to-be-done">What needs to be&nbsp;done</h3>
+<p>Following the midterms, the highest priority would be to complete the bechmark suite so we know the viability of the approach we have used thus far and where to proceed from here. In case the results obtained are satisfactory, we shall then continue to make backward compatibility fixes and re-writing algortihms that are still not as efficient as they can be and look to maximize performance. We can continue on to provide full backward compatibility with object() like signals, however that would come with the trade-off that the performance of them would be more or less same as that of what was previously achieveable from the&nbsp;<span class="caps">API</span>.  </p>
+<p>Another major requirement would be for me to write good documentation of these parts, since these are essential to anybody writing an extension. We would also need to be on the lookout for regressions, if&nbsp;any.</p>
+<p>~&nbsp;Avishkar</p>
+</section>
+        </article>
+      </div>
+    </div>
+    <footer>
+      <div class="content-wrap">
+        <div class="nav"><a href="/">&laquo; Full blog</a></div>
+        <section class="about"><p>Hi, I’m Avishkar Gupta, a full time college student soon to be professional developer 
+as my four years of college come to an end this year. You can check out the work that is 
+documented here over on <a href="https://github.com/rootavish/">Github</a>. 
+I’ve indulged quite a bit into the machine learning and data science side of things
+and wish to go back to uni sometime to further my research into the area.</p>
+
+        </section>
+        <section class="copy">
+          <p>&copy; 2016 Avishkar Gupta (rootavish) &mdash; powered by&nbsp;<a href="https://github.com/jnordberg/wintersmith">Wintersmith</a>
+          </p>
+        </section>
+      </div>
+    </footer>
+  </body>
+</html>
