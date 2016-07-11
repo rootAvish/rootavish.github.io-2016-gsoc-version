@@ -5,9 +5,41 @@
     <atom:link href="http://localhost:8080/feed.xml" rel="self" type="application/rss+xml"></atom:link>
     <link>http://localhost:8080</link>
     <description>Set up for and currently being used exclsively for doing weekly write ups as a GSoC student for ScrapingHub</description>
-    <pubDate>Fri, 24 Jun 2016 05:30:00 +0630</pubDate>
+    <pubDate>Fri, 08 Jul 2016 05:30:00 +0630</pubDate>
     <generator>Wintersmith - https://github.com/jnordberg/wintersmith</generator>
     <language>en</language>
+    <item>
+      <title>Benchmarking and Unit Testing</title>
+      <link>http://localhost:8080/articles/benchmarking-and-unit-testing/</link>
+      <pubDate>Fri, 08 Jul 2016 05:30:00 +0630</pubDate>
+      <guid isPermaLink="true">http://localhost:8080/articles/benchmarking-and-unit-testing/</guid>
+      <author></author>
+      <description>&lt;p&gt;Hi, sorry this post a couple days later than warranted, but there’s been some
+work that required being taken care of. Since the end of the midterm evaluations,
+efforts were concentrated into taking care of issues such as compatability with the
+older API of scrapy, unit testing and benchmarking the signal performance with the
+new API and looking for places where further optimizations are required.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&quot;more&quot;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;One such area I identified was that the &lt;code&gt;use_caching&lt;/code&gt; functionality of the dispatch lib
+was always going unused because of the presence of NoneType objects when a receiver wants
+to be triggered on signals sent by any sender. I’m looking into how we can make that usable,
+as using the caching we can make the Signals perform even better, since majority of the time taken
+by the &lt;code&gt;send_catch_log&lt;/code&gt; function is in the &lt;code&gt;_liveReceivers&lt;/code&gt; method of the &lt;code&gt;Signal&lt;/code&gt; class. This
+method would have a constant time look up had it been for the cache.&lt;/p&gt;
+&lt;p&gt;Here’s some preliminary results of the benchmarks, obtained by running the benchmarking spider with
+–profile as with:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;bash $scrapy bench --profile -o new_profile.cprofile&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Here’s the visualizations of the output obtained using &lt;code&gt;pyprof2calltree&lt;/code&gt;:
+&lt;img src=&quot;/articles/benchmarking-and-unit-testing/new_api.png&quot; alt=&quot;new api called&quot;&gt;&lt;/p&gt;
+&lt;p&gt;The old API:
+&lt;img src=&quot;/articles/benchmarking-and-unit-testing/old_api.png&quot; alt=&quot;old api called&quot;&gt;&lt;/p&gt;
+&lt;p&gt;As we can see, the difference between the two API’s is clear in terms of performance in that the older
+API is clearly taking significantly longer time and a lot more cycles than the new API, while the helper methods
+of the old dispatcher too are taking their fair share of time(results not in picture). Such is not the case anymore.
+Next, I seek to formalize these results in the form of a benchmarking suite and look for ways to improve the
+performance even further. Until next time.&lt;/p&gt;
+</description>
+    </item>
     <item>
       <title>Midterm Evaluations</title>
       <link>http://localhost:8080/articles/midterm-evaluation/</link>

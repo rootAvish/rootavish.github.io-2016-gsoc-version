@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width">
+    <title>Benchmarking and Unit Testing - The Rootavish Files
+    </title>
+    <link rel="alternate" href="http://localhost:8080/feed.xml" type="application/rss+xml" title="Set up for and currently being used exclsively for doing weekly write ups as a GSoC student for ScrapingHub">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic|Anonymous+Pro:400,700,400italic,700italic|Merriweather:400,700,300">
+    <link rel="stylesheet" href="/css/main.css">
+  </head>
+  <body class="article-detail">
+    <header class="header">
+      <div class="content-wrap">
+        <h1>Benchmarking and Unit Testing</h1>
+        <p class="author">Written by <span class="author"><a href="mailto:rootavish@gmail.com">rootavish</a></span>
+        </p>
+      </div>
+    </header>
+    <div id="content">
+      <div class="content-wrap">
+        <article class="article">
+          <section class="content"><p>Hi, sorry this post a couple days later than warranted, but there’s been some
+work that required being taken care of. Since the end of the midterm evaluations,
+efforts were concentrated into taking care of issues such as compatability with the
+older <span class="caps">API</span> of scrapy, unit testing and benchmarking the signal performance with the
+new API and looking for places where further optimizations are&nbsp;required.</p>
+<p><span class="more"></span></p>
+<p>One such area I identified was that the <code>use_caching</code> functionality of the dispatch lib
+was always going unused because of the presence of NoneType objects when a receiver wants
+to be triggered on signals sent by any sender. I’m looking into how we can make that usable,
+as using the caching we can make the Signals perform even better, since majority of the time taken
+by the <code>send_catch_log</code> function is in the <code>_liveReceivers</code> method of the <code>Signal</code> class. This
+method would have a constant time look up had it been for the&nbsp;cache.</p>
+<p>Here’s some preliminary results of the benchmarks, obtained by running the benchmarking spider with
+–profile as&nbsp;with:</p>
+<p><code>bash $scrapy bench --profile -o new_profile.cprofile</code></p>
+<p>Here’s the visualizations of the output obtained using <code>pyprof2calltree</code>:
+<img src="/articles/benchmarking-and-unit-testing/new_api.png" alt="new api called"></p>
+<p>The old <span class="caps">API</span>:
+<img src="/articles/benchmarking-and-unit-testing/old_api.png" alt="old api called"></p>
+<p>As we can see, the difference between the two <span class="caps">API</span>’s is clear in terms of performance in that the older
+API is clearly taking significantly longer time and a lot more cycles than the new API, while the helper methods
+of the old dispatcher too are taking their fair share of time(results not in picture). Such is not the case anymore.
+Next, I seek to formalize these results in the form of a benchmarking suite and look for ways to improve the
+performance even further. Until next&nbsp;time.</p>
+</section>
+        </article>
+      </div>
+    </div>
+    <footer>
+      <div class="content-wrap">
+        <div class="nav"><a href="/">&laquo; Full blog</a></div>
+        <section class="about"><p>Hi, I’m Avishkar Gupta, a full time college student soon to be professional developer 
+as my four years of college come to an end this year. You can check out the work that is 
+documented here over on <a href="https://github.com/rootavish/">Github</a>. 
+I’ve indulged quite a bit into the machine learning and data science side of things
+and wish to go back to uni sometime to further my research into the area.</p>
+
+        </section>
+        <section class="copy">
+          <p>&copy; 2016 Avishkar Gupta (rootavish) &mdash; powered by&nbsp;<a href="https://github.com/jnordberg/wintersmith">Wintersmith</a>
+          </p>
+        </section>
+      </div>
+    </footer>
+  </body>
+</html>
