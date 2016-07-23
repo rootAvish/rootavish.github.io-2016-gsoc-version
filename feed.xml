@@ -5,9 +5,33 @@
     <atom:link href="http://localhost:8080/feed.xml" rel="self" type="application/rss+xml"></atom:link>
     <link>http://localhost:8080</link>
     <description>Set up for and currently being used exclsively for doing weekly write ups as a GSoC student for ScrapingHub</description>
-    <pubDate>Fri, 08 Jul 2016 05:30:00 +0630</pubDate>
+    <pubDate>Sat, 23 Jul 2016 05:30:00 +0630</pubDate>
     <generator>Wintersmith - https://github.com/jnordberg/wintersmith</generator>
     <language>en</language>
+    <item>
+      <title>Formalising the Benchmark Suite, Some More Unit Tests and Backward Compatibility Changes</title>
+      <link>http://localhost:8080/articles/formalising-benchmark-suite-and-compatibility/</link>
+      <pubDate>Sat, 23 Jul 2016 05:30:00 +0630</pubDate>
+      <guid isPermaLink="true">http://localhost:8080/articles/formalising-benchmark-suite-and-compatibility/</guid>
+      <author></author>
+      <description>&lt;p&gt;In the past two weeks I focused my efforts on finalizing the benchmarking suite and improving test coverage. &lt;/p&gt;
+&lt;p&gt;&lt;span class=&quot;more&quot;&gt;&lt;/span&gt;
+From what &lt;code&gt;Codecov&lt;/code&gt; says, we’re 83% of the way there regarding test coverage. As far as the performance of the new signals is concerned, from what the testing shows I gathered that the new signal API always takes less than half the time that is required by the old signal API for both signal connection and the actual sending of the signal. &lt;/p&gt;
+&lt;p&gt;This is attributed mostly to the fact that a lot of time that was previously used up by running a
+combo of the &lt;code&gt;getAllReceivers&lt;/code&gt; and &lt;code&gt;liveReceivers&lt;/code&gt; functions together everytime was taking up a huge amount of time and was the bottleneck
+to the process. As it currently stands, we’re not using the caching mechanism of the library, i.e. have &lt;code&gt;use_caching&lt;/code&gt; set to false always because
+the receivers which do not connect to a specific sender but rather to all require me to find a suitable key for them that can be &lt;code&gt;weakref&lt;/code&gt; ref’d to
+make the entry in the &lt;code&gt;WeakKeyDictionary&lt;/code&gt;. But enough about that, back to benchmarking.  &lt;/p&gt;
+&lt;p&gt;So for the benchmarking process, &lt;code&gt;Djangobech&lt;/code&gt; the &lt;code&gt;Django&lt;/code&gt;
+benchmarking library, does not benchmark the signals currently and the same is still on the &lt;code&gt;TODO&lt;/code&gt; list in the project. They however, did provide
+me with some excellent modules that I used to write the scrapy benchmarking suite for signals. I would leave a link to the same here, but currently
+I’m in a discussion with my mentor on where to include them, as including them in the repo would require that we still keep &lt;code&gt;pyDispatcher&lt;/code&gt; as a dependency
+as it is required to perform a raw apples to apples comparison of the signal code. In this post I’m also sharing results that I got using Robert Kern’s &lt;code&gt;line_profiler&lt;/code&gt; module.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/articles/formalising-benchmark-suite-and-compatibility/line_profiler_output.png&quot; alt=&quot;line profiler output&quot;&gt;.&lt;/p&gt;
+&lt;p&gt;As for the compatibility changes this cycle, I added support for the old style scrapy signals, which were just standard python objects. In similar
+fashion to how I implemented backward compatiblity for receivers without keyword arguments, I proxied the signals through the signal manager to implement backward compatability for the objects. With that the new signals can be safely integrated into scrapy with no worries about breaking legacy code. In the coming weeks, I plan on working on finishing test coverage, maybe adding some signal benchmarks to &lt;code&gt;scrapy bench&lt;/code&gt; and doing documentation.&lt;/p&gt;
+</description>
+    </item>
     <item>
       <title>Benchmarking and Unit Testing</title>
       <link>http://localhost:8080/articles/benchmarking-and-unit-testing/</link>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width">
+    <title>Formalising the Benchmark Suite, Some More Unit Tests and Backward Compatibility Changes - The Rootavish Files
+    </title>
+    <link rel="alternate" href="http://localhost:8080/feed.xml" type="application/rss+xml" title="Set up for and currently being used exclsively for doing weekly write ups as a GSoC student for ScrapingHub">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic|Anonymous+Pro:400,700,400italic,700italic|Merriweather:400,700,300">
+    <link rel="stylesheet" href="/css/main.css">
+  </head>
+  <body class="article-detail">
+    <header class="header">
+      <div class="content-wrap">
+        <h1>Formalising the Benchmark Suite, Some More Unit Tests and Backward Compatibility Changes</h1>
+        <p class="author">Written by <span class="author"><a href="mailto:rootavish@gmail.com">rootavish</a></span>
+        </p>
+      </div>
+    </header>
+    <div id="content">
+      <div class="content-wrap">
+        <article class="article">
+          <section class="content"><p>In the past two weeks I focused my efforts on finalizing the benchmarking suite and improving test&nbsp;coverage. </p>
+<p><span class="more"></span>
+From what <code>Codecov</code> says, we’re 83% of the way there regarding test coverage. As far as the performance of the new signals is concerned, from what the testing shows I gathered that the new signal <span class="caps">API</span> always takes less than half the time that is required by the old signal API for both signal connection and the actual sending of the&nbsp;signal. </p>
+<p>This is attributed mostly to the fact that a lot of time that was previously used up by running a
+combo of the <code>getAllReceivers</code> and <code>liveReceivers</code> functions together everytime was taking up a huge amount of time and was the bottleneck
+to the process. As it currently stands, we’re not using the caching mechanism of the library, i.e. have <code>use_caching</code> set to false always because
+the receivers which do not connect to a specific sender but rather to all require me to find a suitable key for them that can be <code>weakref</code> ref’d to
+make the entry in the <code>WeakKeyDictionary</code>. But enough about that, back to&nbsp;benchmarking.  </p>
+<p>So for the benchmarking process, <code>Djangobech</code> the <code>Django</code>
+benchmarking library, does not benchmark the signals currently and the same is still on the <code>TODO</code> list in the project. They however, did provide
+me with some excellent modules that I used to write the scrapy benchmarking suite for signals. I would leave a link to the same here, but currently
+I’m in a discussion with my mentor on where to include them, as including them in the repo would require that we still keep <code>pyDispatcher</code> as a dependency
+as it is required to perform a raw apples to apples comparison of the signal code. In this post I’m also sharing results that I got using Robert Kern’s <code>line_profiler</code> module.</p>
+<p><img src="/articles/formalising-benchmark-suite-and-compatibility/line_profiler_output.png" alt="line profiler output">.</p>
+<p>As for the compatibility changes this cycle, I added support for the old style scrapy signals, which were just standard python objects. In similar
+fashion to how I implemented backward compatiblity for receivers without keyword arguments, I proxied the signals through the signal manager to implement backward compatability for the objects. With that the new signals can be safely integrated into scrapy with no worries about breaking legacy code. In the coming weeks, I plan on working on finishing test coverage, maybe adding some signal benchmarks to <code>scrapy bench</code> and doing&nbsp;documentation.</p>
+</section>
+        </article>
+      </div>
+    </div>
+    <footer>
+      <div class="content-wrap">
+        <div class="nav"><a href="/">&laquo; Full blog</a></div>
+        <section class="about"><p>Hi, I’m Avishkar Gupta, a full time college student soon to be professional developer 
+as my four years of college come to an end this year. You can check out the work that is 
+documented here over on <a href="https://github.com/rootavish/">Github</a>. 
+I’ve indulged quite a bit into the machine learning and data science side of things
+and wish to go back to uni sometime to further my research into the area.</p>
+
+        </section>
+        <section class="copy">
+          <p>&copy; 2016 Avishkar Gupta (rootavish) &mdash; powered by&nbsp;<a href="https://github.com/jnordberg/wintersmith">Wintersmith</a>
+          </p>
+        </section>
+      </div>
+    </footer>
+  </body>
+</html>
