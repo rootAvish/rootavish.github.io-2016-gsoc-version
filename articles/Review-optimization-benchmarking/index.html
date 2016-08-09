@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width">
+    <title>Code Review, Optimizations and Formal Benchmarking - The Rootavish Files
+    </title>
+    <link rel="alternate" href="http://localhost:8080/feed.xml" type="application/rss+xml" title="Set up for and currently being used exclsively for doing weekly write ups as a GSoC student for ScrapingHub">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic|Anonymous+Pro:400,700,400italic,700italic|Merriweather:400,700,300">
+    <link rel="stylesheet" href="/css/main.css">
+  </head>
+  <body class="article-detail">
+    <header class="header">
+      <div class="content-wrap">
+        <h1>Code Review, Optimizations and Formal Benchmarking</h1>
+        <p class="author">Written by <span class="author"><a href="mailto:rootavish@gmail.com">rootavish</a></span>
+        </p>
+      </div>
+    </header>
+    <div id="content">
+      <div class="content-wrap">
+        <article class="article">
+          <section class="content"><p>Hi,</p>
+<p>Firstly, sorry for the extremely late blog post this time around, however I was
+waiting on my mentor’s comments before I gave another status report because I
+wanted his take on where we are progress wise and the status of the pull
+request. So without further ado, let’s get into&nbsp;it.</p>
+<p><span class="more"></span></p>
+<p>The majority of the last two week were spent in writing unit tests and cleaning
+the code wherever possible, removing any outdated constructs and pushing code
+for review. I also formalized the benchmarking suite using the <code>djangobench</code>
+code as a starting point as mentioned previously, however there were some fin-
+ishing touches left the last time which were completed in this code&nbsp;cycle.</p>
+<p>The test coverage of the patch is complete and we have 100% diff coverage, all
+seems well&nbsp;there.</p>
+<p>Finishing with the benchmarking, I started looking into documentation as due to
+the refactor a re-write of the Signal <span class="caps">API</span> documentation is in order, even though
+we still do have full backward compatability support. Also, now since the code
+review comments are in I’ll be looking to work on those issues and get them sorted
+out at the earliest. Also, we agreed that the benchmarks would not make sense
+as a part of <code>scrapy bench</code> since that would require that we keep the old
+dependencies as a part of the project, which would make no sense as they are
+no longer required. The best solution that we came up with for the same is to
+write the benchmarks elsewhere however then just include a link to them somewhere
+in the <span class="caps">PR</span> itself so we have a history of the same&nbsp;maintained.</p>
+<p>All in all, we’re happy with how the project has turned out, and we’ll probably
+be seeing the <span class="caps">PR</span> merged into the mainline sometime in the&nbsp;future.</p>
+<p>I’ll update this post as soon as I can think of more stuff I want to write&nbsp;:)</p>
+</section>
+        </article>
+      </div>
+    </div>
+    <footer>
+      <div class="content-wrap">
+        <div class="nav"><a href="/">&laquo; Full blog</a></div>
+        <section class="about"><p>Hi, I’m Avishkar Gupta, a full time college student soon to be professional developer 
+as my four years of college come to an end this year. You can check out the work that is 
+documented here over on <a href="https://github.com/rootavish/">Github</a>. 
+I’ve indulged quite a bit into the machine learning and data science side of things
+and wish to go back to uni sometime to further my research into the area.</p>
+
+        </section>
+        <section class="copy">
+          <p>&copy; 2016 Avishkar Gupta (rootavish) &mdash; powered by&nbsp;<a href="https://github.com/jnordberg/wintersmith">Wintersmith</a>
+          </p>
+        </section>
+      </div>
+    </footer>
+  </body>
+</html>
