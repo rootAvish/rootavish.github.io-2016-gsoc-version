@@ -23,6 +23,17 @@
       <div class="content-wrap">
         <article class="article intro">
           <header>
+            <p class="date"><span>10. June 2016</span></p>
+            <h2><a href="/articles/rewriting-scrapy-signals/">Rewriting Scrapy Signals, Part I</a></h2>
+          </header>
+          <section class="content"><p>In this report, I shall present a brief summary of the work done upto this point. To iterate, the end goal of the project is to improve the efficiency
+of Scrapy’s signaling <span class="caps">API</span>. For this purpose the idea was to use Django’s signaling mechanism which claims to make the signals 90% faster. Consequently, according to plan the first step was to port <code>django.dispatch</code>, modify it to our needs and create the <code>scrapy.dispatch</code>. About a week and a half was spent on that front in first understanding the way that library is written, and what would changes needed to go into making the same work with Scrapy, and then actually making those changes. <code>django.dispatch</code> refactored much of the code of <code>PyDispatcher</code> into a <code>Signal</code> class. It also introduced a caching mechanism for receivers and introduced the <code>weakref</code> module into the&nbsp;code.    </p>
+<p>
+            <p class="more"><a href="/articles/rewriting-scrapy-signals/">more</a></p>
+          </section>
+        </article>
+        <article class="article intro">
+          <header>
             <p class="date"><span>22. May 2016</span></p>
             <h2><a href="/articles/community-bonding/">Community Bonding</a></h2>
           </header>

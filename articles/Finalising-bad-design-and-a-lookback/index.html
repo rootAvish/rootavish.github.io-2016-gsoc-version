@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width">
+    <title>Bad Design, Finalising &amp; a Lookback - The Rootavish Files
+    </title>
+    <link rel="alternate" href="http://localhost:8080/feed.xml" type="application/rss+xml" title="Set up for and currently being used exclsively for doing weekly write ups as a GSoC student for ScrapingHub">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic|Anonymous+Pro:400,700,400italic,700italic|Merriweather:400,700,300">
+    <link rel="stylesheet" href="/css/main.css">
+  </head>
+  <body class="article-detail">
+    <header class="header">
+      <div class="content-wrap">
+        <h1>Bad Design, Finalising &amp; a Lookback</h1>
+        <p class="author">Written by <span class="author"><a href="mailto:rootavish@gmail.com">rootavish</a></span>
+        </p>
+      </div>
+    </header>
+    <div id="content">
+      <div class="content-wrap">
+        <article class="article">
+          <section class="content"><p>Hi, since this is the final one, and because I’m somebody who always has their
+Eureka moments in the nick of time, this is going to be a long one. But I think
+you’ve had enough of short and sweet from my&nbsp;side.  </p>
+<p>If you don’t like to read much, I suggest you turn back&nbsp;now.</p>
+<p><span class="more"></span></p>
+<p>So, as always, to re-iterate the goal  of this project is a sweet and simple
+one: move signals away from <code>PyDispatcher</code> in Scrapy. As you know, the
+approach that we chose to follow to do the same was to go the Django way and
+use <code>django.dispatch</code> as a starting&nbsp;point.  </p>
+<p>For the last couple of weeks, y’all have been hearing about my fabled bench-
+marking suite. The reason why I never shared a link to the same in my blog posts
+was because I could never decide on whether the way I’m presenting those is
+right, but with deadline coming up, I finalised on the <code>perf</code> module that is
+used in <code>Djangobench</code>. Before we move any furhter, <a href="https://github.com/rootavish/scrapysignalbench">here’s a link to the
+benchmark suite</a> and [here’s a
+sample output of those benchmarks]. Now that that’s out of the way, the rest
+of the post is going to concentrate on how we got there, and a problem that
+I encountered in the final weeks due to over-engineering on my&nbsp;part.</p>
+<p>As you can see, at this moment the <code>receiver_no_kwargs</code> benchmark is on average
+about 1.5 times faster than how it previously worked. Now, let me tell you about
+a little something, <code>robust_apply</code> is a nuisance, so the original authors of
+<code>django.dispatch</code> had the brilliant idea of completely breaking backward
+compatability and getting rid of receivers that do not take variable keyword
+arguments. That however is not an option that I could follow. So being an
+amateur who hasn’t had to deal with breaking compatability upto this point, I
+decided to not introduce the same in <code>scrapy.dispatch</code>, rather I tried to work
+up some magic inside <code>scrapy.signalmanger</code>, specifically the following&nbsp;“hack”:</p>
+<pre><code class="lang-python"><span class="keyword">if</span> receiver.__repr__() <span class="keyword">not</span> <span class="keyword">in</span> self._patched_receivers:
+    self._patched_receivers[receiver.__repr__()] = \
+            <span class="keyword">lambda</span> sender, **kw: _robust_apply(receiver, sender, **kw)
+</code></pre>
+<p>Right, so as you can see, the flow here was <code>crawler</code> -&gt; <code>SignalManager</code> -&gt;
+<code>Dispatch</code> -&gt; back to proxy in SignalManager. The method call overhead that was
+now introduced into the mix spelt disaster for this benchmark. Disaster. Not
+only that, sending receivers that were not proxied in this way was 0.5X slower
+than the raw dispatcher-dispatcher benchmark. Owing to this over engineered
+mess, I took on the task of writing this part again, with just a couple weeks
+of the coding period left to go. Due to the constant support that I’ve had
+from my mentor Jakob along the way, I’m relieved to say I was able to
+accomplish the same(which you already knew if you took the time to go through
+the benchmarks at the start&nbsp;:P).  </p>
+<p>Another important design decision this week was the one to deprecate <code>scrapy.
+utils.signal</code>. You’d think that is something that would be trivial since we’re
+moving to <code>scrapy.dispatch</code> but the original plan was for the methods in there
+to serve as pass through methods between <code>scrapy.signalmanager</code> and 
+<code>scrapy.dispatch</code>.That however is no longer the case and our benchmark for
+receivers that accept kwargs shows that there is little to no overhead between
+that and raw signal&nbsp;performance.  </p>
+<p>So, with unit tests done, benchmarks done, optimizations done, it came down to
+the documentation. Now, I didn’t realize that all Python documentation ever is
+down using ReStructured Text. So I used up a couple of days to get the documen-
+tation done, however I’m pleased to tell you that even though I’ve not shared
+the same as of yet, it too is&nbsp;done.  </p>
+<p>However if you did look through the benchmarks you would have noticed that the
+connection time of signals to receivers has actually increased instead of
+decreasing. Well, most of that time is taken up in resolving whether a receiver
+accepts keyword arguments, and raising a deprecation warning. So even though it 
+reads as being 2.5X slower than before, that time is actually negligible. Plus,
+in Scrapy unlike django, it’s not connecting to signals that’s the problem,
+it’s sending them multiple&nbsp;times.</p>
+<p>Looking back, I would say at lest from where  I stand the project was a success.
+I was able to learn a ton of new stuff, and make something cool. At the end of
+the day, that’s all that matters right? Also, I got to work with some wonderful
+people at Scrapinghub, specially my mentor Jakob, who put more thought into code
+review than I guess I put into writing it :), but then again, I digress. I
+would like to extend this longer, but I’ll be posting the three page document
+I’ll be submitting to Google on here too, so I guess you can read about it then.
+Until then, Rootavish signing&nbsp;off.</p>
+</section>
+        </article>
+      </div>
+    </div>
+    <footer>
+      <div class="content-wrap">
+        <div class="nav"><a href="/">&laquo; Full blog</a></div>
+        <section class="about"><p>Hi, I’m Avishkar Gupta, a full time college student soon to be professional developer 
+as my four years of college come to an end this year. You can check out the work that is 
+documented here over on <a href="https://github.com/rootavish/">Github</a>. 
+I’ve indulged quite a bit into the machine learning and data science side of things
+and wish to go back to uni sometime to further my research into the area.</p>
+
+        </section>
+        <section class="copy">
+          <p>&copy; 2016 Avishkar Gupta (rootavish) &mdash; powered by&nbsp;<a href="https://github.com/jnordberg/wintersmith">Wintersmith</a>
+          </p>
+        </section>
+      </div>
+    </footer>
+  </body>
+</html>

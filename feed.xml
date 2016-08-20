@@ -5,9 +5,85 @@
     <atom:link href="http://localhost:8080/feed.xml" rel="self" type="application/rss+xml"></atom:link>
     <link>http://localhost:8080</link>
     <description>Set up for and currently being used exclsively for doing weekly write ups as a GSoC student for ScrapingHub</description>
-    <pubDate>Sun, 07  Aug 2016 05:30:00 +0630</pubDate>
+    <pubDate>Tue, 23  Aug 2016 05:30:00 +0630</pubDate>
     <generator>Wintersmith - https://github.com/jnordberg/wintersmith</generator>
     <language>en</language>
+    <item>
+      <title>Bad Design, Finalising &amp; a Lookback</title>
+      <link>http://localhost:8080/articles/Finalising-bad-design-and-a-lookback/</link>
+      <pubDate>Tue, 23  Aug 2016 05:30:00 +0630</pubDate>
+      <guid isPermaLink="true">http://localhost:8080/articles/Finalising-bad-design-and-a-lookback/</guid>
+      <author></author>
+      <description>&lt;p&gt;Hi, since this is the final one, and because I’m somebody who always has their
+Eureka moments in the nick of time, this is going to be a long one. But I think
+you’ve had enough of short and sweet from my side.  &lt;/p&gt;
+&lt;p&gt;If you don’t like to read much, I suggest you turn back now.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&quot;more&quot;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;So, as always, to re-iterate the goal  of this project is a sweet and simple
+one: move signals away from &lt;code&gt;PyDispatcher&lt;/code&gt; in Scrapy. As you know, the
+approach that we chose to follow to do the same was to go the Django way and
+use &lt;code&gt;django.dispatch&lt;/code&gt; as a starting point.  &lt;/p&gt;
+&lt;p&gt;For the last couple of weeks, y’all have been hearing about my fabled bench-
+marking suite. The reason why I never shared a link to the same in my blog posts
+was because I could never decide on whether the way I’m presenting those is
+right, but with deadline coming up, I finalised on the &lt;code&gt;perf&lt;/code&gt; module that is
+used in &lt;code&gt;Djangobench&lt;/code&gt;. Before we move any furhter, &lt;a href=&quot;https://github.com/rootavish/scrapysignalbench&quot;&gt;here’s a link to the
+benchmark suite&lt;/a&gt; and [here’s a
+sample output of those benchmarks]. Now that that’s out of the way, the rest
+of the post is going to concentrate on how we got there, and a problem that
+I encountered in the final weeks due to over-engineering on my part.&lt;/p&gt;
+&lt;p&gt;As you can see, at this moment the &lt;code&gt;receiver_no_kwargs&lt;/code&gt; benchmark is on average
+about 1.5 times faster than how it previously worked. Now, let me tell you about
+a little something, &lt;code&gt;robust_apply&lt;/code&gt; is a nuisance, so the original authors of
+&lt;code&gt;django.dispatch&lt;/code&gt; had the brilliant idea of completely breaking backward
+compatability and getting rid of receivers that do not take variable keyword
+arguments. That however is not an option that I could follow. So being an
+amateur who hasn’t had to deal with breaking compatability upto this point, I
+decided to not introduce the same in &lt;code&gt;scrapy.dispatch&lt;/code&gt;, rather I tried to work
+up some magic inside &lt;code&gt;scrapy.signalmanger&lt;/code&gt;, specifically the following “hack”:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;lang-python&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; receiver.__repr__() &lt;span class=&quot;keyword&quot;&gt;not&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; self._patched_receivers:
+    self._patched_receivers[receiver.__repr__()] = \
+            &lt;span class=&quot;keyword&quot;&gt;lambda&lt;/span&gt; sender, **kw: _robust_apply(receiver, sender, **kw)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Right, so as you can see, the flow here was &lt;code&gt;crawler&lt;/code&gt; -&amp;gt; &lt;code&gt;SignalManager&lt;/code&gt; -&amp;gt;
+&lt;code&gt;Dispatch&lt;/code&gt; -&amp;gt; back to proxy in SignalManager. The method call overhead that was
+now introduced into the mix spelt disaster for this benchmark. Disaster. Not
+only that, sending receivers that were not proxied in this way was 0.5X slower
+than the raw dispatcher-dispatcher benchmark. Owing to this over engineered
+mess, I took on the task of writing this part again, with just a couple weeks
+of the coding period left to go. Due to the constant support that I’ve had
+from my mentor Jakob along the way, I’m relieved to say I was able to
+accomplish the same(which you already knew if you took the time to go through
+the benchmarks at the start :P).  &lt;/p&gt;
+&lt;p&gt;Another important design decision this week was the one to deprecate &lt;code&gt;scrapy.
+utils.signal&lt;/code&gt;. You’d think that is something that would be trivial since we’re
+moving to &lt;code&gt;scrapy.dispatch&lt;/code&gt; but the original plan was for the methods in there
+to serve as pass through methods between &lt;code&gt;scrapy.signalmanager&lt;/code&gt; and 
+&lt;code&gt;scrapy.dispatch&lt;/code&gt;.That however is no longer the case and our benchmark for
+receivers that accept kwargs shows that there is little to no overhead between
+that and raw signal performance.  &lt;/p&gt;
+&lt;p&gt;So, with unit tests done, benchmarks done, optimizations done, it came down to
+the documentation. Now, I didn’t realize that all Python documentation ever is
+down using ReStructured Text. So I used up a couple of days to get the documen-
+tation done, however I’m pleased to tell you that even though I’ve not shared
+the same as of yet, it too is done.  &lt;/p&gt;
+&lt;p&gt;However if you did look through the benchmarks you would have noticed that the
+connection time of signals to receivers has actually increased instead of
+decreasing. Well, most of that time is taken up in resolving whether a receiver
+accepts keyword arguments, and raising a deprecation warning. So even though it 
+reads as being 2.5X slower than before, that time is actually negligible. Plus,
+in Scrapy unlike django, it’s not connecting to signals that’s the problem,
+it’s sending them multiple times.&lt;/p&gt;
+&lt;p&gt;Looking back, I would say at lest from where  I stand the project was a success.
+I was able to learn a ton of new stuff, and make something cool. At the end of
+the day, that’s all that matters right? Also, I got to work with some wonderful
+people at Scrapinghub, specially my mentor Jakob, who put more thought into code
+review than I guess I put into writing it :), but then again, I digress. I
+would like to extend this longer, but I’ll be posting the three page document
+I’ll be submitting to Google on here too, so I guess you can read about it then.
+Until then, Rootavish signing off.&lt;/p&gt;
+</description>
+    </item>
     <item>
       <title>Code Review, Optimizations and Formal Benchmarking</title>
       <link>http://localhost:8080/articles/Review-optimization-benchmarking/</link>

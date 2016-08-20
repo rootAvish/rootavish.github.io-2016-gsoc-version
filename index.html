@@ -23,6 +23,19 @@
       <div class="content-wrap">
         <article class="article intro">
           <header>
+            <p class="date"><span>23. August 2016</span></p>
+            <h2><a href="/articles/Finalising-bad-design-and-a-lookback/">Bad Design, Finalising &amp; a Lookback</a></h2>
+          </header>
+          <section class="content"><p>Hi, since this is the final one, and because I’m somebody who always has their
+Eureka moments in the nick of time, this is going to be a long one. But I think
+you’ve had enough of short and sweet from my&nbsp;side.  </p>
+<p>If you don’t like to read much, I suggest you turn back&nbsp;now.</p>
+<p>
+            <p class="more"><a href="/articles/Finalising-bad-design-and-a-lookback/">more</a></p>
+          </section>
+        </article>
+        <article class="article intro">
+          <header>
             <p class="date"><span>07. August 2016</span></p>
             <h2><a href="/articles/Review-optimization-benchmarking/">Code Review, Optimizations and Formal Benchmarking</a></h2>
           </header>
@@ -68,17 +81,6 @@ new API and looking for places where further optimizations are&nbsp;required.</p
 <p>In the time that has passed since I last posted one of these, I managed to get a prototype of scrapy to work using the new Signals <span class="caps">API</span>. This introduced two very significant API changes into&nbsp;Scrapy.</p>
 <p>
             <p class="more"><a href="/articles/midterm-evaluation/">more</a></p>
-          </section>
-        </article>
-        <article class="article intro">
-          <header>
-            <p class="date"><span>10. June 2016</span></p>
-            <h2><a href="/articles/rewriting-scrapy-signals/">Rewriting Scrapy Signals, Part I</a></h2>
-          </header>
-          <section class="content"><p>In this report, I shall present a brief summary of the work done upto this point. To iterate, the end goal of the project is to improve the efficiency
-of Scrapy’s signaling <span class="caps">API</span>. For this purpose the idea was to use Django’s signaling mechanism which claims to make the signals 90% faster. Consequently, according to plan the first step was to port <code>django.dispatch</code>, modify it to our needs and create the <code>scrapy.dispatch</code>. About a week and a half was spent on that front in first understanding the way that library is written, and what would changes needed to go into making the same work with Scrapy, and then actually making those changes. <code>django.dispatch</code> refactored much of the code of <code>PyDispatcher</code> into a <code>Signal</code> class. It also introduced a caching mechanism for receivers and introduced the <code>weakref</code> module into the&nbsp;code.    </p>
-<p>
-            <p class="more"><a href="/articles/rewriting-scrapy-signals/">more</a></p>
           </section>
         </article>
       </div>
